@@ -1,0 +1,27 @@
+# Mixture of Models (MoM)
+
+> Mixture of Models is an OpenAI-compatible API that routes every chat completion
+> through an internal proposer → refuter → synthesizer pipeline across multiple
+> large language models. Any OpenAI client works unchanged, including native
+> function/tool calling and streaming. Upstream providers are pluggable:
+> OpenRouter, the OpenCode CLI, or a deterministic zero-cost mock.
+
+Key facts:
+- Public surface: OpenAI-compatible `/v1/chat/completions`, `/v1/models`, `/health`.
+- Drop-in: set `OPENAI_BASE_URL=http://127.0.0.1:8000/v1` and `MODEL=mom-chat`.
+- Internal architecture: multiple proposer models generate candidate answers, a
+  refuter model critiques them, and a synthesizer model produces the final reply.
+- Tool calling: returns OpenAI-style `tool_calls` with `finish_reason: "tool_calls"`.
+- Auth: optional bearer keys via `MOM_API_KEYS`.
+- Built with Python and FastAPI; MIT licensed.
+
+## Docs
+- [README](https://github.com/luckeyfaraday/MoM-engine/blob/main/README.md): Overview, install, configuration, and API behavior.
+- [Configuration example](https://github.com/luckeyfaraday/MoM-engine/blob/main/.env.example): All supported environment variables.
+- [Contributing](https://github.com/luckeyfaraday/MoM-engine/blob/main/CONTRIBUTING.md): Development setup and workflow.
+- [Security policy](https://github.com/luckeyfaraday/MoM-engine/blob/main/SECURITY.md): How to report vulnerabilities.
+
+## Upstream providers
+- mock: zero-cost deterministic local provider (default when no key is set).
+- opencode-cli: dev-only provider that shells out to the OpenCode CLI.
+- openrouter: direct OpenRouter API provider for production-like integration.

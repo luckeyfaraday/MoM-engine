@@ -1,6 +1,14 @@
-# Mixture of Models
+# Mixture of Models (MoM)
 
-This repository is a Python skeleton for a Mixture-of-Models (MoM) API with an OpenAI-compatible public surface.
+[![CI](https://github.com/luckeyfaraday/MoM-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/luckeyfaraday/MoM-engine/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![API: OpenAI-compatible](https://img.shields.io/badge/API-OpenAI--compatible-412991.svg)](#api-goal)
+[![Built with FastAPI](https://img.shields.io/badge/built%20with-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+
+> **One OpenAI-compatible endpoint, many models.** MoM routes every chat completion through an internal proposer → refuter → synthesizer pipeline so several models propose, critique, and reconcile each answer.
+
+Mixture of Models (MoM) is a Python/FastAPI service that exposes a standard `/v1/chat/completions` API and, behind it, runs every request through an internal multi-model pipeline. Any OpenAI-compatible client works unchanged — including native function/tool calling and streaming. Upstream providers are pluggable: [OpenRouter](#openrouter-upstream), the [OpenCode CLI](#opencode-cli-upstream), or a deterministic zero-cost [mock](#upstream-selection).
 
 The user-facing contract is intentionally boring:
 
@@ -22,6 +30,15 @@ OpenAI-compatible request
 ```
 
 Bearer API-key enforcement is available through `MOM_API_KEYS` so OpenAI-compatible clients can be wired up early.
+
+## Features
+
+- **Drop-in OpenAI compatibility** — works with any client that speaks `/v1/chat/completions`; just change the base URL and model.
+- **Multi-model architecture** — proposer, refuter, and synthesizer roles, each mappable to a different model.
+- **Native tool calling** — returns OpenAI-style `tool_calls` with `finish_reason: "tool_calls"`, plus streaming (SSE).
+- **Pluggable upstreams** — OpenRouter, OpenCode CLI, or a zero-cost deterministic mock for offline development and CI.
+- **Optional bearer auth** — gate the public surface with `MOM_API_KEYS`.
+- **No keys required to start** — the mock provider runs the full test suite and local server with zero configuration.
 
 ## Project Layout
 
@@ -177,6 +194,33 @@ MOM_PROVIDER_TIMEOUT_SECONDS=60
 ## API Goal
 
 The default response from `/v1/chat/completions` looks like a minimal OpenAI chat completion so existing clients can integrate with the service. When a client supplies `tools` and the internal synthesizer decides a tool is needed, the API returns assistant `tool_calls` with `finish_reason: "tool_calls"`. The client executes the tool and sends the result back as a normal tool message on the next request.
+
+## FAQ
+
+**What is a Mixture of Models?** Instead of returning one model's answer, MoM
+asks several models to propose candidate answers, has a model critique
+(refute) them, and has a synthesizer model produce a single reconciled reply —
+all behind a normal OpenAI chat endpoint.
+
+**How is this different from a router or load balancer?** A router picks *one*
+model per request. MoM combines *multiple* models per request through a fixed
+proposer/refuter/synthesizer architecture.
+
+**Do I need API keys to try it?** No. With no environment variables set, MoM
+uses a deterministic, zero-cost mock provider, so the server and tests run
+offline.
+
+**Which clients work with it?** Anything OpenAI-compatible — the OpenAI SDKs,
+LangChain, OpenCode, `curl`, etc. Point them at `/v1` and use model `mom-chat`.
+
+**Is it production-ready?** It's early-stage (alpha). The OpenRouter upstream is
+the path for production-like integration.
+
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md). For security reports, see
+[SECURITY.md](SECURITY.md).
 
 ## License
 
