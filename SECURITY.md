@@ -16,9 +16,6 @@ a few days and will keep you updated on remediation progress.
 
 ## Scope notes
 
-- The OpenCode CLI upstream (`MOM_UPSTREAM=opencode-cli`) shells out to a local
-  `opencode` binary and is intended for local development only, not for a
-  public hosted deployment.
 - Never commit API keys. Configuration is read from environment variables or a
   local, gitignored `.env` file (see [`.env.example`](.env.example)).
 - Bearer-token auth for the public surface is available via `MOM_API_KEYS`.

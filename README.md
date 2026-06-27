@@ -8,7 +8,7 @@
 
 > **One OpenAI-compatible endpoint, many models.** MoM routes every chat completion through an internal proposer → refuter → synthesizer pipeline so several models propose, critique, and reconcile each answer.
 
-Mixture of Models (MoM) is a Python/FastAPI service that exposes a standard `/v1/chat/completions` API and, behind it, runs every request through an internal multi-model pipeline. Any OpenAI-compatible client works unchanged — including native function/tool calling and streaming. Upstream providers are pluggable: [OpenRouter](#openrouter-upstream), the [OpenCode CLI](#opencode-cli-upstream), or a deterministic zero-cost [mock](#upstream-selection).
+Mixture of Models (MoM) is a Python/FastAPI service that exposes a standard `/v1/chat/completions` API and, behind it, runs every request through an internal multi-model pipeline. Any OpenAI-compatible client works unchanged — including native function/tool calling and streaming. Upstream providers are pluggable: [OpenRouter](#openrouter-upstream) or a deterministic zero-cost [mock](#upstream-selection).
 
 The user-facing contract is intentionally boring:
 
@@ -36,7 +36,7 @@ Bearer API-key enforcement is available through `MOM_API_KEYS` so OpenAI-compati
 - **Drop-in OpenAI compatibility** — works with any client that speaks `/v1/chat/completions`; just change the base URL and model.
 - **Multi-model architecture** — proposer, refuter, and synthesizer roles, each mappable to a different model.
 - **Native tool calling** — returns OpenAI-style `tool_calls` with `finish_reason: "tool_calls"`, plus streaming (SSE).
-- **Pluggable upstreams** — OpenRouter, OpenCode CLI, or a zero-cost deterministic mock for offline development and CI.
+- **Pluggable upstreams** — OpenRouter or a zero-cost deterministic mock for offline development and CI.
 - **Optional bearer auth** — gate the public surface with `MOM_API_KEYS`.
 - **No keys required to start** — the mock provider runs the full test suite and local server with zero configuration.
 
@@ -44,7 +44,7 @@ Bearer API-key enforcement is available through `MOM_API_KEYS` so OpenAI-compati
 
 - `mom/api/`: FastAPI app, OpenAI-compatible schemas, and response builders.
 - `mom/core/`: MoM engine, internal architecture, claim, refutation, synthesis, tool-call parsing, and telemetry structures.
-- `mom/providers/`: Pluggable provider interface, deterministic mock provider, OpenCode CLI provider, and OpenAI-compatible provider.
+- `mom/providers/`: Pluggable provider interface, deterministic mock provider, and OpenAI-compatible provider.
 - `tests/`: API compatibility and claim lifecycle tests.
 
 ## Run Locally
@@ -61,41 +61,16 @@ Run tests:
 pytest
 ```
 
-Run the OpenCode-backed dev server:
+Start the dev server (uses the zero-cost mock provider with no keys set):
 
 ```bash
-scripts/dev-opencode.sh
+uvicorn mom.api.server:app --reload
 ```
 
 Prompt it from another terminal:
 
 ```bash
 scripts/prompt.sh "Explain what this API does in one paragraph."
-```
-
-Use it as an OpenCode model by registering this provider in your OpenCode config:
-
-```jsonc
-"mom": {
-  "npm": "@ai-sdk/openai-compatible",
-  "name": "Mixture of Models",
-  "options": {
-    "baseURL": "http://127.0.0.1:8000/v1",
-    "apiKey": "sk-local-test"
-  },
-  "models": {
-    "mom-chat": {
-      "name": "MoM Chat",
-      "tool_call": true
-    }
-  }
-}
-```
-
-Then run:
-
-```bash
-opencode run -m mom/mom-chat "Inspect this repo and summarize the main API surface."
 ```
 
 Check the API directly:
@@ -122,42 +97,11 @@ Authorization: Bearer mom_dev_key
 The upstream provider is selected with `MOM_UPSTREAM`.
 
 ```text
-MOM_UPSTREAM=mock          # zero-cost deterministic local provider
-MOM_UPSTREAM=opencode-cli  # dev-only OpenCode CLI provider
-MOM_UPSTREAM=openrouter    # direct OpenRouter API provider
+MOM_UPSTREAM=mock        # zero-cost deterministic local provider
+MOM_UPSTREAM=openrouter  # direct OpenRouter API provider
 ```
 
 If `MOM_UPSTREAM` is not set but `OPENROUTER_API_KEY` is present, the API uses OpenRouter. Otherwise it uses the deterministic mock provider.
-
-## OpenCode CLI Upstream
-
-Use this for budget-safe local architecture testing through your existing OpenCode setup. The default model order is:
-
-```text
-opencode/deepseek-v4-flash-free
-opencode/mimo-v2.5-free
-opencode/nemotron-3-ultra-free
-```
-
-The wrapper `scripts/dev-opencode.sh` sets these defaults for you. To override them manually:
-
-```bash
-MOM_UPSTREAM=opencode-cli \
-MOM_PROPOSER_MODELS=opencode/deepseek-v4-flash-free,opencode/mimo-v2.5-free,opencode/nemotron-3-ultra-free \
-MOM_REFUTER_MODEL=opencode/deepseek-v4-flash-free \
-MOM_SYNTHESIZER_MODEL=opencode/deepseek-v4-flash-free \
-uvicorn mom.api.server:app --reload
-```
-
-Optional OpenCode settings:
-
-```bash
-OPENCODE_BIN=opencode
-MOM_OPENCODE_DIR=/tmp/mom-opencode-provider
-MOM_PROVIDER_TIMEOUT_SECONDS=180
-```
-
-This path shells out to `opencode run --pure --format json --title "MoM upstream"`. It is intended for local development, not for a public hosted API. The default `MOM_OPENCODE_DIR` is outside the repo so internal model passes do not operate on project files.
 
 ## OpenRouter Upstream
 
@@ -223,7 +167,7 @@ uses a deterministic, zero-cost mock provider, so the server and tests run
 offline.
 
 **Which clients work with it?** Anything OpenAI-compatible — the OpenAI SDKs,
-LangChain, OpenCode, `curl`, etc. Point them at `/v1` and use model `mom-chat`.
+LangChain, `curl`, etc. Point them at `/v1` and use model `mom-chat`.
 
 **Is it production-ready?** It's early-stage (alpha). The OpenRouter upstream is
 the path for production-like integration.

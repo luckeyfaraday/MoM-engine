@@ -106,7 +106,7 @@ def iter_chat_completion_sse(
     if tool_calls:
         # Emit each tool call in a SINGLE delta with the complete function
         # (name + arguments together). Splitting name and arguments across two deltas confuses some
-        # client parsers (e.g. opencode), so the relayed call never executed.
+        # client parsers, so the relayed call never executed.
         yield _sse(
             build_chat_completion_chunk(
                 completion_id=completion_id,

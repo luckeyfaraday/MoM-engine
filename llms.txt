@@ -4,7 +4,7 @@
 > through an internal proposer → refuter → synthesizer pipeline across multiple
 > large language models. Any OpenAI client works unchanged, including native
 > function/tool calling and streaming. Upstream providers are pluggable:
-> OpenRouter, the OpenCode CLI, or a deterministic zero-cost mock.
+> OpenRouter or a deterministic zero-cost mock.
 
 Key facts:
 - Public surface: OpenAI-compatible `/v1/chat/completions`, `/v1/models`, `/health`.
@@ -34,5 +34,4 @@ Related terms and how MoM relates to them:
 
 ## Upstream providers
 - mock: zero-cost deterministic local provider (default when no key is set).
-- opencode-cli: dev-only provider that shells out to the OpenCode CLI.
 - openrouter: direct OpenRouter API provider for production-like integration.

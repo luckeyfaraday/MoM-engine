@@ -13,7 +13,6 @@ from mom.api.schemas import ChatCompletionRequest, ChatCompletionResponse, Model
 from mom.core.engine import MoMEngine
 from mom.providers.base import ProviderCallError
 from mom.providers.mock import MockProvider
-from mom.providers.opencode_cli import OpenCodeCliProvider
 from mom.providers.openai_compatible import OpenAICompatibleProvider
 
 MODEL_IDS = ["mom-chat"]
@@ -21,8 +20,6 @@ MODEL_IDS = ["mom-chat"]
 
 def build_engine() -> MoMEngine:
     upstream = os.getenv("MOM_UPSTREAM", "").strip().lower()
-    if upstream == "opencode-cli":
-        return MoMEngine(provider=OpenCodeCliProvider.from_env())
     if upstream == "openrouter" or (not upstream and os.getenv("OPENROUTER_API_KEY")):
         return MoMEngine(provider=OpenAICompatibleProvider.from_env())
     return MoMEngine(provider=MockProvider())
