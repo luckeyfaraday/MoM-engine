@@ -206,6 +206,17 @@ all behind a normal OpenAI chat endpoint.
 model per request. MoM combines *multiple* models per request through a fixed
 proposer/refuter/synthesizer architecture.
 
+**How does this relate to model fusion or model merging?** MoM does
+**inference-time fusion**: it combines the *outputs* of several models per
+request (think "OpenRouter fusion" when those models are served via OpenRouter).
+This is different from weight-level **model merging / model evolution** research
+(e.g. work from Sakana AI), which produces a single new set of weights offline.
+MoM keeps each model separate and reconciles their answers live.
+
+**Why "loops"?** The proposer → refuter → synthesizer passes form a short
+refinement loop over a single request, so each answer is critiqued before it's
+returned rather than emitted in one shot.
+
 **Do I need API keys to try it?** No. With no environment variables set, MoM
 uses a deterministic, zero-cost mock provider, so the server and tests run
 offline.
@@ -225,3 +236,7 @@ Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the
 ## License
 
 Released under the [MIT License](LICENSE).
+
+---
+
+<sub>**Keywords:** mixture of models · MoM · OpenRouter fusion · multi-model LLM API · OpenAI-compatible API · inference-time model fusion · model ensembling · LLM synthesis · proposer / refuter / synthesizer · agentic loops · Sakana · Fugu · FastAPI LLM gateway · tool calling.</sub>

@@ -15,6 +15,16 @@ Key facts:
 - Auth: optional bearer keys via `MOM_API_KEYS`.
 - Built with Python and FastAPI; MIT licensed.
 
+Related terms and how MoM relates to them:
+- Mixture of Models / MoM: this project's name and approach.
+- OpenRouter fusion: inference-time fusion of multiple models served via OpenRouter.
+- Model fusion / ensembling: MoM combines model *outputs* per request (inference-time),
+  not model *weights*.
+- Model merging / model evolution (e.g. Sakana AI, Fugu): weight-level techniques that
+  produce one merged model offline; MoM differs by keeping models separate and reconciling
+  their answers live.
+- Agentic loops: the proposer/refuter/synthesizer passes form a short refinement loop per request.
+
 ## Docs
 - [README](https://github.com/luckeyfaraday/MoM-engine/blob/main/README.md): Overview, install, configuration, and API behavior.
 - [Configuration example](https://github.com/luckeyfaraday/MoM-engine/blob/main/.env.example): All supported environment variables.
