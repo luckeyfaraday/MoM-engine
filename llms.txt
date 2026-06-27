@@ -17,12 +17,13 @@ Key facts:
 
 Related terms and how MoM relates to them:
 - Mixture of Models / MoM: this project's name and approach.
+- Combining AI models: MoM blends the strengths of several models per request.
 - OpenRouter fusion: inference-time fusion of multiple models served via OpenRouter.
 - Model fusion / ensembling: MoM combines model *outputs* per request (inference-time),
   not model *weights*.
-- Model merging / model evolution (e.g. Sakana AI, Fugu): weight-level techniques that
-  produce one merged model offline; MoM differs by keeping models separate and reconciling
-  their answers live.
+- Sakana AI's Fugu: a Japanese model that takes a similar approach of combining multiple
+  models; MoM does this at inference time, keeping each model separate and reconciling
+  their answers live rather than merging weights offline.
 - Agentic loops: the proposer/refuter/synthesizer passes form a short refinement loop per request.
 
 ## Docs

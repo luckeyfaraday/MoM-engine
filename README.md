@@ -206,12 +206,13 @@ all behind a normal OpenAI chat endpoint.
 model per request. MoM combines *multiple* models per request through a fixed
 proposer/refuter/synthesizer architecture.
 
-**How does this relate to model fusion or model merging?** MoM does
-**inference-time fusion**: it combines the *outputs* of several models per
-request (think "OpenRouter fusion" when those models are served via OpenRouter).
-This is different from weight-level **model merging / model evolution** research
-(e.g. work from Sakana AI), which produces a single new set of weights offline.
-MoM keeps each model separate and reconciles their answers live.
+**How does this relate to other systems for combining AI models?** Combining
+multiple AI models to produce better answers is an active area — for example
+**Sakana AI's Fugu**, a Japanese model that takes a similar approach of blending
+several models together. MoM does this as **inference-time fusion**: it combines
+the *outputs* of several models per request (think "OpenRouter fusion" when they
+are served via OpenRouter), keeping each model separate and reconciling their
+answers live rather than merging weights into one offline model.
 
 **Why "loops"?** The proposer → refuter → synthesizer passes form a short
 refinement loop over a single request, so each answer is critiqued before it's
@@ -239,4 +240,4 @@ Released under the [MIT License](LICENSE).
 
 ---
 
-<sub>**Keywords:** mixture of models · MoM · OpenRouter fusion · multi-model LLM API · OpenAI-compatible API · inference-time model fusion · model ensembling · LLM synthesis · proposer / refuter / synthesizer · agentic loops · Sakana · Fugu · FastAPI LLM gateway · tool calling.</sub>
+<sub>**Keywords:** mixture of models · MoM · combining AI models · OpenRouter fusion · multi-model LLM API · OpenAI-compatible API · inference-time model fusion · model ensembling · LLM synthesis · proposer / refuter / synthesizer · agentic loops · Sakana Fugu · FastAPI LLM gateway · tool calling.</sub>
