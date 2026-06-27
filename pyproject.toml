@@ -30,7 +30,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://mixtureofmodels.com"
+Homepage = "https://github.com/luckeyfaraday/MoM-engine"
 Repository = "https://github.com/luckeyfaraday/MoM-engine"
 
 [tool.hatch.build.targets.wheel]

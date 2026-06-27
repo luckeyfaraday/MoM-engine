@@ -186,7 +186,7 @@ Optional OpenRouter settings:
 
 ```bash
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
-OPENROUTER_HTTP_REFERER=https://mixtureofmodels.com
+OPENROUTER_HTTP_REFERER=https://github.com/luckeyfaraday/MoM-engine
 OPENROUTER_APP_TITLE="Mixture of Models"
 MOM_PROVIDER_TIMEOUT_SECONDS=60
 ```
